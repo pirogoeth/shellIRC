@@ -1,0 +1,78 @@
+
+shellIRC
+
+shellbot {
+
+shellbot is an IRC bot written in the BASH
+scripting language. 
+
+I have not yet written the module guide, nor added
+a hook into the code for modules. within the next 
+few updates, i will add user-module support with a
+guide on how to write, along with an example
+module.
+
+Current Module Info:
+
+mod_prowl:
+
+mod_prowl is a module that makes use of the prowl
+api to send push notifications to idevices.
+
+default trigger inside the parser is ^push
+syntax: ^push <username>
+
+for this to work, you have to add nicknames and
+prowl api keys to etc/core_prowl in this format:
+
+nickname-prowl40charAPIkey
+
+if you have it in correct format, when you
+send ^push nickname, it will return a code of 200
+and tell you how many API calls are remaining.
+
+:end info mod_prowl
+
+mod_trim:
+
+mod_trim is a simple url trimmer, that uses the
+is.gd api for shortening and tells you how many
+characters the url was shortened. 
+
+the trigger for mod_trim is ^trim.
+
+:end info mod_trim
+
+:config
+
+configuration is in etc/core_config.sh and is
+basically self-explanitory. the last option
+is your host for the bot to know that youre the 
+owner + you can do the advanced commands, etc.
+
+:end info config
+
+:command_list
+
+^shell
+^push
+^shutdown
+^join
+^part
+^cycle
+^uptime
+^trim
+
+also responds to CTCP TIME and VERSION.
+
+:end info command_list
+
+}
+
+relaybot {
+
+config is in etc/relayer/core_config.sh
+
+relays JOINS, PARTS, QUITS, ACTIONS, and messages.
+
+}
