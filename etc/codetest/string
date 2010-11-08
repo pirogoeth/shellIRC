@@ -1,0 +1,1 @@
+cat etc/mod_quotes | grep --line-number  | sed -e 's/:/: /' | sed -e 's/1:.*/||/;s/[1-9]://;s/ //' | tr -d '||' | sed -e 's/ /|/g' | awk '{if(-bash) { print -bash}}' | sed -e 's/|/ /g' | grep --line-number  | sed -e 's/:/: /'
