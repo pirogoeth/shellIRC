@@ -1,0 +1,44 @@
+triggers and module code {
+
+hooking of user modules is very simple and easy to do, as long as its done
+right. the problems start when coders "forget" to write documentation.
+i refuse to have people coming to me, complaining about, 'oh my module doesn't
+work with your bot, there must be a bug'. No. If i take one look at their
+code and see that they did NOT READ this file, im going to turn them away
+(depending on the weather and atmospheric conditions, i might help).
+
+without further adue, heres the doc for triggers and module code.
+
+the trigger code is dynamic, which means you DO NOT have to restart the bot
+to inject a trigger to hook in/insert.
+
+heres some example trigger code:
+
+:ex1.1
+	if [ $(echo $cmd | cut -b 1-5) == "^test" ] ; then
+		msg $dest test.
+	fi
+	
+the == "^test" can be whatever you want it to be, as long as cut -b 1-5 is
+the length of your hook (say, cut -b 1-8 for "^trigger")
+
+the code between the ; then and fi is completely yours. you can have it do
+something short right in there, or you can execute a script stored in
+modules/hooks/code.
+
+to execute a script in here, the code in between the conditions would be:
+
+:ex2.1
+	./modules/hooks/code/whatever.sh
+	
+to INCLUDE a script into the trigger (useful for functions), do this:
+
+:ex2.2	
+	. modules/hooks/code/whatever.sh
+
+after you write the trigger and module code, thats it! 
+just make sure that the trigger is in modules/hooks and the modules code
+is in modules/hooks/code, unless you have embedded module code (ex2.1)
+
+NOTE: the :ex*.* aren't actually code, its just an example marker for
+reference, dont actually put it in your module code/trigger code.
