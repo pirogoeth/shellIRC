@@ -1,10 +1,11 @@
 #!/bin/bash
 # libparser.sh -- command parser for miyoko's shellbot
 
-# include chat and channel management libraries
+# include chat and channel management libraries and hook generator
 . include/libchat.sh
 . include/libchannel.sh
 . modules/quotes.sh
+. include/libhooks.sh
 
 parse () {
 	send_nick=$(echo ${@} | awk '{print $1}' | sed -e 's/://;s/!/ /')
@@ -113,6 +114,15 @@ parse () {
 				echo "NOTICE $send_nick :^quote [add|list|find|del|search] <# or term for search>" >> etc/core_input
 			fi
 		fi
+
+		if [ $(echo $cmd | cut -b 1-7) == "^github" ] ; then
+			. modules/github.sh
+			repo=$(echo $text | awk '{print $2}')
+			branch_s=$(echo $text | awk '{print $3}')
+			github_repo_info $repo $branch_s
+		fi
+	
+		insert_hooks
 		
 		 . include/libctcp.sh
 	fi

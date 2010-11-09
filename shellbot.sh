@@ -51,7 +51,7 @@ do read LINE || break
 		fi
 	fi
 	# check the perform to know when to join our channel
-	if [ $(echo $LINE | awk '{print $2}') == "366" ] ; then
+	if [ $(echo $LINE | awk '{print $2}') == "376" ] || [ $(echo $LINE | awk '{print $2}') == "366" ] ; then
 		join $channel
 	fi
 	
