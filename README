@@ -1,4 +1,3 @@
-
 shellIRC
 
 shellbot {
@@ -12,9 +11,9 @@ few updates, i will add user-module support with a
 guide on how to write, along with an example
 module.
 
-Current Module Info:
+Module Info <<
 
-mod_prowl:
+:mod_prowl
 
 mod_prowl is a module that makes use of the prowl
 api to send push notifications to idevices.
@@ -33,7 +32,7 @@ and tell you how many API calls are remaining.
 
 :end info mod_prowl
 
-mod_trim:
+:mod_trim
 
 mod_trim is a simple url trimmer, that uses the
 is.gd api for shortening and tells you how many
@@ -51,6 +50,24 @@ is your host for the bot to know that youre the
 owner + you can do the advanced commands, etc.
 
 :end info config
+
+:core_shell
+
+the core_shell embedded module allows execution of shell commands with attached operators ( | & || && > >> < etc..) through the use of eval.
+
+the core_shell module can only used by a person with the host specified by the config::user_host directive.
+
+the core_shell module is triggered with ^shell.
+
+:end info core_shell
+
+:core_uptime
+
+core_uptime is triggered by ^uptime.
+
+the core_uptime module displays how long the bot has been running in seconds.
+
+:end info core_uptime
 
 :command_list
 
@@ -70,6 +87,8 @@ also responds to CTCP TIME and VERSION.
 }
 
 relaybot {
+
+[[BETA STAGES]]
 
 config is in etc/relayer/core_config.sh
 
