@@ -5,6 +5,7 @@
 nick=""
 channel=""
 server=""
+port=""
 ns_user=""
 ns_pass=""
 

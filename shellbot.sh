@@ -33,7 +33,7 @@ echo "NICK $nick" >> etc/core_input
 echo "USER $(whoami) +iw  $nick :$nick" >> etc/core_input
 
 # start up the connection
-tail -f etc/core_input | telnet $server 6667 | \
+tail -f etc/core_input | telnet $server $port | \
 while true
 do read LINE || break
 	echo "$LINE"
