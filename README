@@ -13,6 +13,13 @@ module.
 
 Module Info <<
 
+:writing_modules
+
+READ modules/hooks/README.hooks if you're interested in making your own 
+modules
+
+:end info writing_modules
+
 :mod_prowl
 
 mod_prowl is a module that makes use of the prowl
