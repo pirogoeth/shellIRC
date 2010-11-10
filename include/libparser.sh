@@ -92,7 +92,7 @@ parse () {
 		fi
 		if [ $(echo $cmd | cut -b 1-7) == "^quote" ] ; then
 			if [ $(echo $text | awk '{print $2}') == "add" ] ; then
-				quote=$(echo $text | sed -e 's/\^quote//g;s/add//;s/:  //;s/ /|/;s/ /|/g')
+				quote=$(echo $text | sed -e 's/\^quote//g;s/add//;s/:  //;s/|/%/g;s/ /|/;s/ /|/g')
 				addquote $quote
 			fi
 			if [ $(echo $text | awk '{print $2}') == "list" ] ; then
@@ -111,7 +111,7 @@ parse () {
 				searchquote $search_param
 			fi
 			if [ -z $(echo $text | awk '{print $2}') ] ; then
-				echo "NOTICE $send_nick :^quote [add|list|find|del|search] <# or term for search>" >> etc/core_input
+				echo "NOTICE $send_nick :^quote [add|list|view|search|del] [# or term for search]" >> etc/core_input
 			fi
 		fi
 

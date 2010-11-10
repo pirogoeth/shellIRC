@@ -3,9 +3,12 @@
 
 addquote () {
 	qtext=$(echo "'$1'")
-	ts=$(echo "@@@ added by $send_nick at $(date)")
+	ts=$(echo "@@@ added by $send_nick")
 	ts=$(echo $ts | sed -e 's/|/%/g;s/ /|/g')
 	echo "$qtext|$ts" >> etc/mod_quotes
+	quotes=$(cat etc/mod_quotes)
+	rm etc/mod_quotes ; touch etc/mod_quotes
+	echo $quotes >>etc/mod_quotes
 	msg $dest $send_nick, your quote was added.
 }
 
@@ -18,7 +21,7 @@ listquotes () {
 }
 
 viewquote () {
-	quote=$(cat etc/mod_quotes | grep --line-number "" | egrep -o -m1 "$1:.*")
+	quote=$(cat etc/mod_quotes | grep --line-number "" | grep -Eo -m1 "$1:(.*)")
 	quote=$(echo $quote | sed -e 's/|/ /g;s/%/|/g;s/:/: /')
 	msg $recv_chan $quote
 }
