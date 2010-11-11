@@ -8,7 +8,7 @@ addquote () {
 	echo "$qtext|$ts" >> etc/mod_quotes
 	quotes=$(cat etc/mod_quotes)
 	rm etc/mod_quotes ; touch etc/mod_quotes
-	echo $quotes >>etc/mod_quotes
+	echo "$quotes" >>etc/mod_quotes
 	msg $dest $send_nick, your quote was added.
 }
 
@@ -16,7 +16,7 @@ listquotes () {
 	qlist=$(cat etc/mod_quotes | grep --line-number "")
 	for quote in $qlist
 		do
-			notice $send_nick $(echo $quote | sed -e 's/|/ /g;s/%/|/g;s/:/: /')
+			notice $send_nick $(echo "$quote" | sed -e 's/|/ /g;s/%/|/g;s/:/: /')
 		done
 }
 
@@ -34,7 +34,7 @@ delquote () {
 	fi
 	for item in $qlist
 		do
-			echo $item >> etc/mod_quotes.tmp
+			echo "$item" | sed -re 's/([0-9]+)://' >> etc/mod_quotes.tmp
 		done
 	if [ ! -e etc/mod_quotes.tmp ] ; then
 		rm etc/mod_quotes
@@ -42,13 +42,14 @@ delquote () {
 	else
 		mv etc/mod_quotes.tmp etc/mod_quotes
 	fi
+	msg $dest $send_nick, the quote was deleted.
 }
 
 searchquote () {
 	search=$(echo $1)
 	qlist=$(cat etc/mod_quotes | grep --line-number "" | grep "$search")
 	for result in $qlist
-		do 
+		do
 			result=$(echo $result | sed -e 's/|/ /g;s/%/|/g;s/:/: /')
 			notice $send_nick $result
 		done
