@@ -25,7 +25,7 @@ github_repo_info () {
 	commit_url=$(echo "$commit_api_ret" | grep -Eo -C1 -m1 "  url:(.*)" | sed -e 's/  url: //')
 	commit_sender=$(echo "$commit_api_ret" | grep -E -A1 -m1 "committer:(.*)" | sed -e 's/.*://g' | tr -d [:space:])
 	struct_repo="Repo Name: $repo_name || Repo Owner: $repo_owner || Repo Description: $repo_description || Repo URL: http:$repo_url"
-	struct_commit="Latest commit by: $commit_sender || http://github.com/$commit_url"
+	struct_commit="Latest commit by: $commit_sender || http://github.com$commit_url"
 	msg $dest $struct_repo
 	msg $dest $struct_commit
 }
