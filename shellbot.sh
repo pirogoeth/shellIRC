@@ -32,6 +32,14 @@ one=1
 echo "NICK $nick" >> etc/core_input
 echo "USER $(whoami) +iw  $nick :$nick" >> etc/core_input
 
+# setup 'die' function
+function die () {
+	killall -TERM shellbot.sh
+}
+
+# include our require stuff
+. include/required.sh
+
 # start up the connection
 tail -f etc/core_input | telnet $server $port | \
 while true
