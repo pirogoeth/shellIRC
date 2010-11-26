@@ -43,16 +43,10 @@ parse () {
 				struct=$(echo "$trimmed")
 				msg $dest $struct
 			else
-				struct=$(echo "Shortened URL: $trimmed  ::  URL was shortened by $(expr $ocount - $tcount) characters.  ::  Originl URL is: $URL")
+				struct=$(echo "Shortened URL: $trimmed  ::  URL was shortened by $(expr $ocount - $tcount) characters.  ::  Original URL is: $URL")
 				msg $dest $struct
 			fi
-			#process_link $cmd $trimmed
 		fi
-		#if [ $(echo $cmd | cut -b 1-8) == "https://" ] ; then
-		#	echo "Trimmer active: $cmd"
-		#	trimmed=$(curl -s http://is.gd/api.php?longurl=$cmd)
-		#	process_link $cmd $trimmed
-		#fi
 		if [ $(echo $cmd | cut -b 1-9) == "^shutdown" ] ; then
 			if [ "$send_host" == "$user_host" ] ; then
 				echo "QUIT" >> etc/core_input
@@ -121,11 +115,9 @@ parse () {
 			branch_s=$(echo $text | awk '{print $3}')
 			github_repo_info $repo $branch_s
 		fi
-	
+
 		insert_hooks
-		
+
 		 . include/libctcp.sh
 	fi
 }
-
-. include/libtrimmer.sh
