@@ -28,11 +28,10 @@ conn_open_1 () {
 		fi
 
 		# check the perform to know when to join our channel
-		if [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "3" ] ; then
+		if [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "3" ] || [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "4" ] ; then
 			if [ -z $sonce ] ; then
 				connmsg=$(echo "Now connected to $server1 $channel1")
 				join $2 1
-				sleep .5s
 				relay_2 $connmsg
 				sonce=1
 			fi
@@ -64,7 +63,7 @@ conn_open_1 () {
 				relay_2 $MSG
 			fi
 		fi
-		if [ "$command" == "PART" ] ; then
+		if [ "$command" == "PART" ] || [ "$command" == "KICK" ] ; then
 			if [ ! "$(echo $LINE | sed -e 's/!/ /;s/://' | awk '{print $1}')" == "$tnick1" ] ; then
 				uparse=$(echo $LINE | awk '{print $1}')
 				uparse=$(echo $uparse | sed -e 's/!/ /;s/://')
@@ -115,11 +114,10 @@ conn_open_2 () {
 		fi
 
 		# check the perform to know when to join our channel
-		if [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "3" ] ; then
+		if [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "3" ] || [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "4" ] ; then
 			if [ -z $sonce ] ; then
 				connmsg=$(echo "Now connected to $server2 $channel2")
 				join $2 2
-				sleep .5s
 				relay_1 $connmsg
 				sonce=1
 			fi
@@ -151,7 +149,7 @@ conn_open_2 () {
 				relay_1 $MSG
 			fi
 		fi
-		if [ "$command" == "PART" ] ; then
+		if [ "$command" == "PART" ] || [ "$command" == "KICK" ] ; then
 			if [ ! "$(echo $LINE | sed -e 's/!/ /;s/://' | awk '{print $1}')" == "$tnick2" ] ; then
 				uparse=$(echo $LINE | awk '{print $1}')
 				uparse=$(echo $uparse | sed -e 's/!/ /;s/://')
