@@ -15,7 +15,7 @@ parse () {
 	send_host=$(echo "$send_host" | awk '{print $2}')
 	command=$(echo ${@} | awk '{print $2}')
 	dest=$(echo ${@} | awk '{print $3}')
-	if [ $command == "PRIVMSG" ] ; then
+	if [ $command == "PRIVMSG" ] || [ $command == "PONG" ] ; then
 		text=${@:4}
 		cmd=$(echo "$text" | awk '{print $1}')
 		cmd=${cmd#:}

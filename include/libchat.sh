@@ -7,3 +7,7 @@ msg () {
 notice () {
 	echo "NOTICE $1 :${@:2}" >> etc/core_input
 }
+
+send_raw () {
+	echo "${@:1}" >> etc/core_input
+}
