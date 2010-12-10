@@ -50,6 +50,17 @@ do read LINE || break
 		server_resp=$(echo "$LINE" | awk '{print $2}')
 		echo "PONG $server_resp" >> etc/core_input
 	fi
+	
+	# make sure there wasnt an ERROR: for disconnect sent
+	if [ $(echo "$LINE" | awk '{print $1}') == "ERROR:" ] ; then
+		die
+	fi
+
+	# check is the nick was already in use
+	if [ "$(echo "$LINE" | awk '{print $4}')" == "$nick" ] ; then
+		nick="$nick-"
+		echo "NICK $nick" >>etc/core_input
+	fi
 
 	# check the perform to know when to identify
 	if [ $(echo $LINE | awk '{print $2}') == "250" ] ; then
