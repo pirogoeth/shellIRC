@@ -63,14 +63,14 @@ do read LINE || break
 	fi
 
 	# check the perform to know when to identify
-	if [ $(echo $LINE | awk '{print $2}') == "250" ] ; then
+	if [ $(echo $LINE | awk '{print $2}' | cut -b 1) == "4" ] ; then
 		if [ "$identify" == "yes" ] ; then
 			. modules/identify.sh $ns_user $ns_pass
 			unset ns_user ns_pass
 		fi
 	fi
 	# check the perform to know when to join our channel
-	if [ $(echo $LINE | awk '{print $2}') == "376" ] || [ $(echo $LINE | awk '{print $2}') == "366" ] ; then
+	if [ $(echo $LINE | awk '{print $2}' | cut -b 1) == "4" ]; then
 		join $channel
 	fi
 	
