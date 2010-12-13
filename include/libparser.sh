@@ -22,6 +22,9 @@ parse () {
 		if [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == ":^ident" ] && [ "$(echo ${@} | awk '{print $5}' | md5sum - | sed -e 's/-//g' | tr -d [[:space:]])" == "$owner_pass" ] ; then
 			user_host=$send_host
 			notice $send_nick Identified.
+		elif [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == ":^ident" ] && [ "$(echo ${@} | awk '{print $5}' | md5sum - | sed -e 's/-//g' | tr -d [[:space:]])" != "$owner_pass" ] ; then
+			user_host=""
+			notice $send_nick Invalid.
 		fi
 		if [ $(echo "$cmd" | cut -b 1-6) == "^shell" ] ; then
 			rm etc/core_shell
