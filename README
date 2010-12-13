@@ -5,6 +5,19 @@ shellbot {
 shellbot is an IRC bot written in the BASH
 scripting language. 
 
+:owner_authentication
+
+our new form of auth is more secure and is a bit
+better than flimsy host checking. you send
+a privmsg to the bot that says '^ident <pass>'
+and it puts your host in as $owner_host for priv
+checking. to set a pass, you need to MD5sum it.
+to do that, type 'echo <password> | md5sum - | sed -e 's/-//g' | tr -d [:space:]'
+in a terminal and put the result in the owner_pass
+directive in etc/core_config.sh
+
+:end info owner_authentication
+
 I have not yet written the module guide, nor added
 a hook into the code for modules. within the next 
 few updates, i will add user-module support with a
