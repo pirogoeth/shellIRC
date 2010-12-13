@@ -70,7 +70,7 @@ do read LINE || break
 		fi
 	fi
 	# check the perform to know when to join our channel
-	if [ $(echo $LINE | awk '{print $2}' | cut -b 1) == "4" ]; then
+	if [ $(echo $LINE | awk '{print $2}' | cut -b 1) == "4" ] || [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "3" ] ; then
 		join $channel
 	fi
 	

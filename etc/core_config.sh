@@ -9,4 +9,5 @@ port=""
 ns_user=""
 ns_pass=""
 
-user_host=""
+# bot owner, put your password here, its an md5hashed string.
+owner_pass=""
