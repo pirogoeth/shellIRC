@@ -10,6 +10,7 @@
 parse () {
 	send_nick=$(echo ${@} | awk '{print $1}' | sed -e 's/://;s/!/ /')
 	send_host=$(echo ${@} | awk '{print $1}' | sed -e 's/://;s/@/ /')
+	sender=$(echo ${@} | awk '{print $1}' | sed -e 's/://')
 	recv_chan=$(echo ${@} | awk '{print $3}')
 	send_nick=$(echo "$send_nick" | awk '{print $1}')
 	send_host=$(echo "$send_host" | awk '{print $2}')
@@ -20,16 +21,16 @@ parse () {
 		cmd=$(echo "$text" | awk '{print $1}')
 		cmd=${cmd#:}
 		if [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == ":^ident" ] && [ "$(echo ${@} | awk '{print $5}' | md5sum - | sed -e 's/-//g' | tr -d [[:space:]])" == "$owner_pass" ] ; then
-			user_host=$send_host
+			admin=$sender
 			notice $send_nick Identified.
 		elif [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == ":^ident" ] && [ "$(echo ${@} | awk '{print $5}' | md5sum - | sed -e 's/-//g' | tr -d [[:space:]])" != "$owner_pass" ] ; then
-			user_host=""
+			admin=""
 			notice $send_nick Invalid.
 		fi
 		if [ $(echo "$cmd" | cut -b 1-6) == "^shell" ] ; then
 			rm etc/core_shell
 			touch etc/core_shell
-			if [ $send_host == $user_host ] ; then
+			if [ $sender == $admin ] ; then
 				echo "$(eval ${text#* })" > etc/core_shell 2> etc/core_shell
 				while read core_shell; do
 					msg $dest $core_shell
@@ -55,7 +56,7 @@ parse () {
 			fi
 		fi
 		if [ $(echo $cmd | cut -b 1-9) == "^shutdown" ] ; then
-			if [ "$send_host" == "$user_host" ] ; then
+			if [ "$sender" == "$admin" ] ; then
 				echo "QUIT" >> etc/core_input
 				procname=$(echo "$0" | sed -e 's/\.\///;s/*\///')
 				killall -TERM $procname
@@ -66,30 +67,34 @@ parse () {
 		if [ $(echo $cmd | cut -b 1-5) == "^push" ] ; then
 			. include/libprowl.sh
 		fi
-		if [ $(echo $cmd | cut -b 1-5) == "^join" ] ; then
-			chan=$(echo $text | awk '{print $2}')
-			join $chan
-			unset chan
-		fi
-		if [ $(echo $cmd | cut -b 1-5) == "^part" ] ; then
-			chan=$(echo $text | awk '{print $2}')
-			part $chan
-			unset chan
-		fi
-		if [ $(echo $cmd | cut -b 1-6) == "^cycle" ] ; then
-			chan=$(echo $text | awk '{print $2}')
-			cycle $chan
-			unset chan
-		fi
-		if [ $(echo $cmd | cut -b 1-5) == "^kick" ] ; then
-			knick=$(echo $text | awk '{print $2}')
-			kick $recv_chan $knick
-			unset knick
-		fi
-		if [ $(echo $cmd | cut -b 1-7) == "^uptime" ] ; then
-			uptime=$(expr $(date +%s) - $boottime)
-			msg $dest I have been running for $uptime seconds
-			unset uptime
+		if [ $sender == $admin ] ; then
+			if [ $(echo $cmd | cut -b 1-5) == "^join" ] ; then
+				chan=$(echo $text | awk '{print $2}')
+				join $chan
+				unset chan
+			fi
+			if [ $(echo $cmd | cut -b 1-5) == "^part" ] ; then
+				chan=$(echo $text | awk '{print $2}')
+				part $chan
+				unset chan
+			fi
+			if [ $(echo $cmd | cut -b 1-6) == "^cycle" ] ; then
+				chan=$(echo $text | awk '{print $2}')
+				cycle $chan
+				unset chan
+			fi
+			if [ $(echo $cmd | cut -b 1-5) == "^kick" ] ; then
+				knick=$(echo $text | awk '{print $2}')
+				kick $recv_chan $knick
+				unset knick
+			fi
+			if [ $(echo $cmd | cut -b 1-7) == "^uptime" ] ; then
+				uptime=$(expr $(date +%s) - $boottime)
+				msg $dest I have been running for $uptime seconds
+				unset uptime
+			fi
+		else
+			msg $send_nick Unauthorized.
 		fi
 		if [ $(echo $cmd | cut -b 1-7) == "^quote" ] ; then
 			if [ $(echo $text | awk '{print $2}') == "add" ] ; then
