@@ -5,18 +5,15 @@
 . etc/core_config.sh
 
 # setup for arguments and case it
-args=`getopt :ib $*`
-set -- $(echo $args | sed -e 's/--//g')
-
-for i
+while getopts "iS:C:" flag
 	do
-		case "$i" in
-			-i)
+		case "$flag" in
+			i)
 			identify="yes"
 			;;
-			-b)
-			$0 $(echo $args | sed -e 's/-b//g;s/--//g') & disown
-			exit 0
+			S) export server="$OPTARG";export custom="yes"
+			;;
+			C) export channel="$OPTARG"
 			;;
 		esac
 	done
