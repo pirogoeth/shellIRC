@@ -1,15 +1,25 @@
 #!/bin/bash
 # shellbot.sh -- core for miyoko's shellbot
 
-# include our configuration
+# include our config
 . etc/core_config.sh
 
-# check if we identify or not
-case $1 in
-	-i)
-	identify="yes"
-	;;
-esac
+# setup for arguments and case it
+args=`getopt :ib $*`
+set -- $(echo $args | sed -e 's/--//g')
+
+for i
+	do
+		case "$i" in
+			-i)
+			identify="yes"
+			;;
+			-b)
+			$0 $(echo $args | sed -e 's/-b//g;s/--//g') & disown
+			exit 0
+			;;
+		esac
+	done
 
 # some tiny bit of setup
 boottime=$(date +%s)
@@ -34,7 +44,7 @@ echo "USER $(whoami) +iw  $nick :$nick" >> etc/core_input
 
 # setup 'die' function
 function die () {
-	killall -TERM shellbot.sh
+	kill -9 $$ 
 }
 
 # include our require stuff
@@ -63,7 +73,7 @@ do read LINE || break
 	fi
 
 	# check the perform to know when to identify
-	if [ $(echo $LINE | awk '{print $2}' | cut -b) == "3" ] || [ $(echo $LINE | awk '{print $2}' | cut -b 1) == "4" ] ; then
+	if [ $(echo $LINE | awk '{print $2}' | cut -b 1) == "4" ] ; then
 		if [ "$identify" == "yes" ] ; then
 			. modules/identify.sh $ns_user $ns_pass
 			unset ns_user ns_pass
