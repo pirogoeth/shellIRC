@@ -1,0 +1,19 @@
+place servsaxx.def.sed in etc/ and services_hook.sh in modules/hooks
+
+info:
+
+there are multiple usages, i will give a short description so you can get the gist.
+
+sr means server raw, a raw command to be parsed by the server
+
+	sr->PRIVMSG #maiome.lobby :texttexttext
+
+os means operserv, a module that probably runs in your services package.
+
+	os->restart
+	
+if you look at servsaxx.def.sed, you will see the different assignments
+that you can use here, like:
+	cs->register #channel
+	ns->logout
+	hs->activate person

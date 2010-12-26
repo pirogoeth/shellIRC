@@ -1,0 +1,8 @@
+place this in modules/hooks
+
+usage:
+
+>forward <channame> IN A PM SESSION WITH THE BOT
+	it will forward all messages in a channel to YOU VIA PM.
+>unforward IN A PM SESSION WITH THE BOT
+	it will stop the bot from forwarding channel messages.
