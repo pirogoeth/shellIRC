@@ -12,12 +12,11 @@ ctcp_req=$(echo $ctcp_req | tr -d [:space:])
 request=$ctcp_req
 if [ "$recv_trig" == "PRIVMSG" ] ; then
 	if [ "$recv_self" == "$nick" ] ; then
-		echo "*** Received CTCP $request from $recv_from ***"
-		echo "*** Received CTCP $request from $recv_from ***" >> etc/core_ctcp
 		if [ "$request" == $'\001VERSION\001' ] ; then
+			echo "RECEIVED CTCP VERSION: $recv_from"
 			notice $recv_from VERSION shellbot by miyoko
-		fi
-		if [ "$request" == $'\001TIME\001' ] ; then
+		elif [ "$request" == $'\001TIME\001' ] ; then
+			echo "RECEIVED CTCP TIME: $recv_from"
 			notice $recv_from TIME $(date)
 		fi
 	fi

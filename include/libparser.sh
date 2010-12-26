@@ -10,7 +10,6 @@
 parse () {
 	send_nick=$(echo ${@} | awk '{print $1}' | sed -e 's/://;s/!/ /')
 	send_host=$(echo ${@} | awk '{print $1}' | sed -e 's/://;s/@/ /')
-	sender=$(echo ${@} | awk '{print $1}' | sed -e 's/://')
 	recv_chan=$(echo ${@} | awk '{print $3}')
 	send_nick=$(echo "$send_nick" | awk '{print $1}')
 	send_host=$(echo "$send_host" | awk '{print $2}')
@@ -20,18 +19,24 @@ parse () {
 		text=${@:4}
 		cmd=$(echo "$text" | awk '{print $1}')
 		cmd=${cmd#:}
-		if [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == ":^ident" ] && [ "$(echo ${@} | awk '{print $5}' | md5sum - | sed -e 's/-//g' | tr -d [[:space:]])" == "$owner_pass" ] ; then
-			admin=$sender
+		if [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == "":"$prefix"ident"" ] && [ "$(echo ${@} | awk '{print $5}' | md5sum - | sed -e 's/-//g' | tr -d [[:space:]])" == "$owner_pass" ] ; then
+			user_host=$send_host
 			notice $send_nick Identified.
-		elif [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == ":^ident" ] && [ "$(echo ${@} | awk '{print $5}' | md5sum - | sed -e 's/-//g' | tr -d [[:space:]])" != "$owner_pass" ] ; then
-			admin=""
+		elif [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == "":"$prefix"ident"" ] && [ "$(echo ${@} | awk '{print $5}' | md5sum - | sed -e 's/-//g' | tr -d [[:space:]])" != "$owner_pass" ] ; then
+			user_host=""
 			notice $send_nick Invalid.
 		fi
-		if [ $(echo "$cmd" | cut -b 1-6) == "^shell" ] ; then
+		if [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == "":"$prefix"nickserv"" ] && [ -n "$(echo ${@} | awk '{print $5}')" ] ; then
+			./modules/identify.sh $ns_user $(echo ${@} | awk '{print $5}') $socket
+			notice $send_nick Identified to NickServ for username \`$ns_user\`.
+		elif [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == "":"$prefix"nickserv"" ] && [ -z "$(echo ${@} | awk '{print $5}')" ] ; then
+			notice $send_nick Invalid.
+		fi
+		if [ $(echo "$cmd" | cut -b 1-6) == $prefix"shell" ] ; then
 			rm etc/core_shell
 			touch etc/core_shell
-			if [ $sender == $admin ] ; then
-				echo "$(eval ${text#* })" > etc/core_shell 2> etc/core_shell
+			if [ $send_host == $user_host ] ; then
+				echo "$(eval ${text#* })" 2>&1 1>etc/core_shell
 				while read core_shell; do
 					msg $dest $core_shell
 				done < etc/core_shell
@@ -39,7 +44,7 @@ parse () {
 				notice $send_nick Unauthorized access.
 			fi
 		fi
-		if [ $(echo $cmd | cut -b 1-5) == "^trim" ] ; then
+		if [ $(echo $cmd | cut -b 1-5) == $prefix"trim" ] ; then
 			URL=$(echo $text | awk '{print $2}')
 			echo "Trimmer active: $URL"
 			trimmed=$(curl -s http://is.gd/api.php?longurl=$URL)
@@ -55,50 +60,46 @@ parse () {
 				msg $dest $struct
 			fi
 		fi
-		if [ $(echo $cmd | cut -b 1-9) == "^shutdown" ] ; then
-			if [ "$sender" == "$admin" ] ; then
-				echo "QUIT" >> etc/core_input
-				procname=$(echo "$0" | sed -e 's/\.\///;s/*\///')
-				killall -TERM $procname
+		if [ $(echo $cmd | cut -b 1-9) == $prefix"shutdown" ] ; then
+			if [ "$send_host" == "$user_host" ] ; then
+				echo "QUIT" >> $socket
+				killall -TERM $$
+				die "Received shutdown command"
 			else
 				notice $send_nick Unauthorized access.
 			fi
 		fi
-		if [ $(echo $cmd | cut -b 1-5) == "^push" ] ; then
+		if [ $(echo $cmd | cut -b 1-5) == $prefix"push" ] ; then
 			. include/libprowl.sh
 		fi
-		if [ $sender == $admin ] ; then
-			if [ $(echo $cmd | cut -b 1-5) == "^join" ] ; then
-				chan=$(echo $text | awk '{print $2}')
-				join $chan
-				unset chan
-			fi
-			if [ $(echo $cmd | cut -b 1-5) == "^part" ] ; then
-				chan=$(echo $text | awk '{print $2}')
-				part $chan
-				unset chan
-			fi
-			if [ $(echo $cmd | cut -b 1-6) == "^cycle" ] ; then
-				chan=$(echo $text | awk '{print $2}')
-				cycle $chan
-				unset chan
-			fi
-			if [ $(echo $cmd | cut -b 1-5) == "^kick" ] ; then
-				knick=$(echo $text | awk '{print $2}')
-				kick $recv_chan $knick
-				unset knick
-			fi
-			if [ $(echo $cmd | cut -b 1-7) == "^uptime" ] ; then
-				uptime=$(expr $(date +%s) - $boottime)
-				msg $dest I have been running for $uptime seconds
-				unset uptime
-			fi
-		else
-			msg $send_nick Unauthorized.
+		if [ $(echo $cmd | cut -b 1-5) == $prefix"join" ] ; then
+			chan=$(echo $text | awk '{print $2}')
+			join $chan
+			unset chan
 		fi
-		if [ $(echo $cmd | cut -b 1-7) == "^quote" ] ; then
+		if [ $(echo $cmd | cut -b 1-5) == $prefix"part" ] ; then
+			chan=$(echo $text | awk '{print $2}')
+			part $chan
+			unset chan
+		fi
+		if [ $(echo $cmd | cut -b 1-6) == $prefix"cycle" ] ; then
+			chan=$(echo $text | awk '{print $2}')
+			cycle $chan
+			unset chan
+		fi
+		if [ $(echo $cmd | cut -b 1-5) == $prefix"kick" ] ; then
+			knick=$(echo $text | awk '{print $2}')
+			kick $recv_chan $knick
+			unset knick
+		fi
+		if [ $(echo $cmd | cut -b 1-7) == $prefix"uptime" ] ; then
+			uptime=$(expr $(date +%s) - $boottime)
+			msg $dest I have been running for $uptime seconds
+			unset uptime
+		fi
+		if [ $(echo $cmd | cut -b 1-7) == $prefix"quote" ] ; then
 			if [ $(echo $text | awk '{print $2}') == "add" ] ; then
-				quote=$(echo $text | sed -e 's/\^quote//g;s/add//;s/:  //;s/|/%/g;s/ /|/;s/ /|/g')
+				quote=$(echo $text | sed -e 's/\'$prefix'quote//g;s/add//;s/:  //;s/|/%/g;s/ /|/;s/ /|/g')
 				addquote $quote
 			fi
 			if [ $(echo $text | awk '{print $2}') == "list" ] ; then
@@ -117,11 +118,11 @@ parse () {
 				searchquote $search_param
 			fi
 			if [ -z $(echo $text | awk '{print $2}') ] ; then
-				echo "NOTICE $send_nick :^quote [add|list|view|search|del] [# or term for search]" >> etc/core_input
+				echo "NOTICE $send_nick :"$prefix"quote [add|list|view|search|del] [# or term for search]" >> $socket
 			fi
 		fi
 
-		if [ $(echo $cmd | cut -b 1-7) == "^github" ] ; then
+		if [ $(echo $cmd | cut -b 1-7) == $prefix"github" ] ; then
 			. modules/github.sh
 			repo=$(echo $text | awk '{print $2}')
 			branch_s=$(echo $text | awk '{print $3}')
@@ -129,7 +130,6 @@ parse () {
 		fi
 
 		insert_hooks
-
 		 . include/libctcp.sh
 	fi
 }

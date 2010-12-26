@@ -4,28 +4,29 @@
 # include our config
 . etc/core_config.sh
 
+# setup the socket
+socket="etc/core_input"
+
 # setup for arguments and case it
-while getopts "iS:C:" flag
+while getopts "S:C:N:" flag
 	do
 		case "$flag" in
-			i)
-			identify="yes"
-			;;
-			S) export server="$OPTARG";export custom="yes"
+			S) export server="$OPTARG";export socket="tmp/$server"_input""
 			;;
 			C) export channel="$OPTARG"
 			;;
+			N) export nick="$OPTARG"
 		esac
 	done
 
 # some tiny bit of setup
 boottime=$(date +%s)
 
-# empty out core_input
-if [ -e ./etc/core_input ] ; then
-	echo '' > etc/core_input
+# empty out the socket
+if [ -e $socket ] ; then
+	echo '' > $socket
 else
-	touch etc/core_input
+	touch $socket
 fi
 
 # simple variable for kickrejoin
@@ -36,26 +37,26 @@ one=1
 . include/libchannel.sh
 
 # dump registration info into core_input
-echo "NICK $nick" >> etc/core_input
-echo "USER $(whoami) +iw  $nick :$nick" >> etc/core_input
+echo "NICK $nick" >> $socket
+echo "USER $(whoami) +iw  $nick :$nick" >> $socket
 
 # setup 'die' function
 function die () {
-	kill -9 $$ 
+	kill -9 $$
 }
 
 # include our require stuff
 . include/required.sh
 
 # start up the connection
-tail -f etc/core_input | telnet $server $port | \
+tail -f $socket | telnet $server $port | \
 while true
 do read LINE || break
 	echo "$LINE"
 	# check for pings from the ircd
 	if [ $(echo "$LINE" | awk '{print $1}') == "PING" ] ; then
 		server_resp=$(echo "$LINE" | awk '{print $2}')
-		echo "PONG $server_resp" >> etc/core_input
+		echo "PONG $server_resp" >> $socket
 	fi
 	
 	# make sure there wasnt an ERROR: for disconnect sent
@@ -66,16 +67,9 @@ do read LINE || break
 	# check is the nick was already in use
 	if [ "$(echo "$LINE" | awk '{print $4}')" == "$nick" ] ; then
 		nick="$nick-"
-		echo "NICK $nick" >>etc/core_input
+		echo "NICK $nick" >>$socket
 	fi
 
-	# check the perform to know when to identify
-	if [ $(echo $LINE | awk '{print $2}' | cut -b 1) == "4" ] ; then
-		if [ "$identify" == "yes" ] ; then
-			. modules/identify.sh $ns_user $ns_pass
-			unset ns_user ns_pass
-		fi
-	fi
 	# check the perform to know when to join our channel
 	if [ $(echo $LINE | awk '{print $2}' | cut -b 1) == "4" ] || [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "3" ] ; then
 		join $channel
