@@ -1,0 +1,12 @@
+s/os/OperServ/;
+s/ns/NickServ/;
+s/hs/HostServ/;
+s/cs/ChanServ/;
+s/bs/BotServ/;
+s/al/ALIS/;
+s/gs/GameServ/;
+s/ms/MemoServ/;
+s/is/InfoServ/;
+s/gr/GroupServ/;
+s/hl/HelpServ/;
+s/sr//;
