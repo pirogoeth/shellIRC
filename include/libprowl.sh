@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # libprowl.sh -- prowl push support for miyoko's shellbot
 
 sender="$send_nick"

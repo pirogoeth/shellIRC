@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # quotes.sh -- quotes module for miyoko's shellbot
 
 addquote () {
-	if [ $(echo -n $1 | wc -c) == "1" ] || [ $(echo -n $1 | wc -c) == "" ] ; then
+	if [ $(echo -n $1 | wc -c) == "1" ] || [ $(echo -n $1 | wc -c) == "" ] || [ $(echo -n "$1") == "\*" ] ; then
 		msg $dest $send_nick, your quote was rejected.
 	else	
 		qtext=$(echo "'$1'")

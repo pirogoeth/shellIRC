@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # libchannel.sh -- channel management for miyoko's shellbot
 
 # current channel commands (join, part)

@@ -1,6 +1,6 @@
 # ping module
 
-if [ "$(echo "$cmd" | cut -b 1-5)" == "^ping" ] ; then
+if [ "$(echo "$cmd" | cut -b 1-5)" == $prefix"ping" ] ; then
 	send_raw PING $send_nick
 	ping_nick=$send_nick
 	ping_send=$(date +%s.%N)

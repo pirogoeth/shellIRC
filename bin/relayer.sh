@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # relayer.sh -- relayer core for miyoko's relaybot.sh
 
 relay_1 () {
@@ -21,6 +21,7 @@ conn_open_1 () {
 	while true
 	do read LINE || break
 		echo "$LINE"
+		LINE=$(echo "$LINE" | sed -e 's/'$(echo "\*")'/\*/g')
 		# check for pings from the ircd
 		if [ $(echo "$LINE" | awk '{print $1}') == "PING" ] ; then
 			server_resp=$(echo "$LINE" | awk '{print $2}')
@@ -30,9 +31,9 @@ conn_open_1 () {
 		# check the perform to know when to join our channel
 		if [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "3" ] || [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "4" ] ; then
 			if [ -z $sonce ] ; then
-				connmsg=$(echo "Now connected to $server1 $channel1")
+				#connmsg=$(echo "Now connected to $server1 $channel1")
 				join $2 1
-				relay_2 $connmsg
+				#relay_2 $connmsg
 				sonce=1
 			fi
 		fi
@@ -51,7 +52,7 @@ conn_open_1 () {
 			else
 				MSG=$(echo "<$relaysetup/$server1> $text")
 			fi
-			relay_2 $MSG
+			relay_2 "$MSG"
 		fi
 		if [ "$command" == "JOIN" ] ; then
 			if [ ! "$(echo $LINE | sed -e 's/!/ /;s/://' | awk '{print $1}')" == "$(echo $tnick1)" ] ; then
@@ -60,7 +61,7 @@ conn_open_1 () {
 				unick=$(echo $uparse | awk '{print $1}')
 				uhost=$(echo $uparse | awk '{print $2}')
 				MSG=$(echo "--- $unick ($uhost) joined the remote channel ---")
-				relay_2 $MSG
+				relay_2 "$MSG"
 			fi
 		fi
 		if [ "$command" == "PART" ] || [ "$command" == "KICK" ] ; then
@@ -70,7 +71,7 @@ conn_open_1 () {
 				unick=$(echo $uparse | awk '{print $1}')
 				uhost=$(echo $uparse | awk '{print $2}')
 				MSG=$(echo "--- $unick ($uhost) parted the remote channel ---")
-				relay_2 $MSG
+				relay_2 "$MSG"
 			fi
 		fi
 		if [ "$command" == "QUIT" ] ; then
@@ -82,12 +83,12 @@ conn_open_1 () {
 				function e_text () { echo ${@:4} | sed -e 's/://'; }
 				reason=$(e_text $LINE)
 				MSG=$(echo "--- $unick ($uhost) quit the remote server: $reason ---")
-				relay_2 $MSG
+				relay_2 "$MSG"
 			fi
 		fi
 		
 		# log the line just for reference
-		echo $LINE >> etc/relayer/relay_log-1
+		echo "$LINE" >> etc/relayer/relay_log-1
 	
 		# check for a kick so we know to rejoin
 		if [ $(echo "$LINE" | awk '{print $2}') == "KICK" ] ; then
@@ -107,6 +108,7 @@ conn_open_2 () {
 	while true
 	do read LINE || break
 		echo "$LINE"
+		LINE=$(echo "$LINE" | sed -e 's/'$(echo "\*")'/\*/g')
 		# check for pings from the ircd
 		if [ $(echo "$LINE" | awk '{print $1}') == "PING" ] ; then
 			server_resp=$(echo "$LINE" | awk '{print $2}')
@@ -116,9 +118,9 @@ conn_open_2 () {
 		# check the perform to know when to join our channel
 		if [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "3" ] || [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "4" ] ; then
 			if [ -z $sonce ] ; then
-				connmsg=$(echo "Now connected to $server2 $channel2")
+				#connmsg=$(echo "Now connected to $server2 $channel2")
 				join $2 2
-				relay_1 $connmsg
+				#relay_1 $connmsg
 				sonce=1
 			fi
 		fi
@@ -137,7 +139,7 @@ conn_open_2 () {
 			else
 				MSG=$(echo "<$relaysetup/$server2> $text")
 			fi
-			relay_1 $MSG
+			relay_1 "$MSG"
 		fi
 		if [ "$command" == "JOIN" ] ; then
 			if [ ! "$(echo $LINE | sed -e 's/!/ /;s/://' | awk '{print $1}')" == "$tnick2" ] ; then
@@ -146,7 +148,7 @@ conn_open_2 () {
 				unick=$(echo $uparse | awk '{print $1}')
 				uhost=$(echo $uparse | awk '{print $2}')
 				MSG=$(echo "--- $unick ($uhost) joined the remote channel ---")
-				relay_1 $MSG
+				relay_1 "$MSG"
 			fi
 		fi
 		if [ "$command" == "PART" ] || [ "$command" == "KICK" ] ; then
@@ -156,7 +158,7 @@ conn_open_2 () {
 				unick=$(echo $uparse | awk '{print $1}')
 				uhost=$(echo $uparse | awk '{print $2}')
 				MSG=$(echo "--- $unick ($uhost) parted the remote channel ---")
-				relay_1 $MSG
+				relay_1 "$MSG"
 			fi
 		fi
 		if [ "$command" == "QUIT" ] ; then
@@ -168,7 +170,7 @@ conn_open_2 () {
 				function e_text () { echo ${@:4} | sed -e 's/://'; }
 				reason=$(e_text $LINE)
 				MSG=$(echo "--- $unick ($uhost) quit the remote server: $reason ---")
-				relay_1 $MSG
+				relay_1 "$MSG"
 			fi
 		fi
 

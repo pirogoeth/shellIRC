@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # libtrimmer.sh -- url trimmer for miyoko's shellbot
 
 process_link () {

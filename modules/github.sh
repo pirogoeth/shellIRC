@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # github.sh -- a github checking module for miyoko's shellbot
 
 github_repo_info () {

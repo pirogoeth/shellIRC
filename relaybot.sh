@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # relaybot.sh -- core for miyoko's IRC relaybot
 
 # include our configuration

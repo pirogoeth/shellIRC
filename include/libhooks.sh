@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # libhooks.sh -- library for hooking user triggers and modules into the parser
 
 hooks=$(ls modules/hooks/*.sh)
