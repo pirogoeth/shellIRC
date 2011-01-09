@@ -1,6 +1,6 @@
 # flooder script
 
-if [ "$(echo $cmd | cut -b 1-6)" == "^flood" ] && [ "$sender" == "$admin" ] ; then
+if [ "$(echo $cmd | cut -b 1-6)" == "^flood" ] && [ $send_host == $user_host ] ; then
 	amt=$3
 	dest=$4
 	text=${@:5}
