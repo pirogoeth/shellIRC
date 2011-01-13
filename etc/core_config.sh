@@ -1,13 +1,17 @@
 #!/bin/bash
 # core_config.sh -- core configuration for miyoko's shellbot
 
-# setup variables
+# bot and server info
 nick=""
 channel=""
 server=""
 port=""
-ns_user=""
-ns_pass=""
 
-# bot owner, put your password here, its an md5hashed string.
+# nickserv credentials
+ns_user=""
+
+# set your command prefix
+prefix=">"
+
+# bot owners, put your MD5hashed password here:
 owner_pass=""
