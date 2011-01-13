@@ -36,7 +36,7 @@ parse () {
 			rm etc/core_shell
 			touch etc/core_shell
 			if [ $send_host == $user_host ] ; then
-				echo "$(eval ${text#* })" 2>&1 1>etc/core_shell
+				echo "$(eval ${text#* } 2>&1 1>&1)" 1>etc/core_shell
 				while read core_shell; do
 					msg $dest $core_shell
 				done < etc/core_shell
