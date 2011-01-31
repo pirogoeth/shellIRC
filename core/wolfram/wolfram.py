@@ -44,7 +44,10 @@ if __name__ == "__main__":
         text = sys.stdin.readlines()
         result = search(" ".join(text))
         bool, response = result
-        for title, poddle in response:
-	    print ' \x02', title, '\n', " ".join(poddle), '\n'
-    except (IndexError, TypeError):
+        if bool == True:
+            for title, poddle in response:
+	        print '\x02', title, '\n', " ".join(poddle), '\n'
+        else:
+            print '\x02', 'No results found, try a different keyword.', '\n'
+    except (IndexError, TypeError, SystemExit, KeyboardInterrupt):
         print "lolwut."
