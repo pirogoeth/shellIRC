@@ -15,10 +15,10 @@ parse () {
 	send_host=$(echo "$send_host" | awk '{print $2}')
 	command=$(echo ${@} | awk '{print $2}')
 	dest=$(echo ${@} | awk '{print $3}')
-	if [ $command == "PRIVMSG" ] || [ $command == "PONG" ] ; then
-		text=${@:4}
-		cmd=$(echo "$text" | awk '{print $1}')
-		cmd=${cmd#:}
+	text=${@:4}
+	cmd=$(echo $text | awk '{print $1}')
+	cmd=${cmd#:}
+	if [ $(echo $cmd | awk '{print $1}' | cut -b 1) == $prefix ] && [ $command == "PRIVMSG" ] || [ $command == "PONG" ] ; then
 		if [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == "":"$prefix"ident"" ] && [ "$(pass_md5 $(echo ${@} | awk '{print $5}'))" == "$owner_pass" ] ; then
 			user_host=$send_host
 			notice $send_nick Identified.
@@ -128,8 +128,5 @@ parse () {
 			branch_s=$(echo $text | awk '{print $3}')
 			github_repo_info $repo $branch_s
 		fi
-
-		insert_hooks
-		 . include/libctcp.sh
 	fi
 }
