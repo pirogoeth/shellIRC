@@ -22,7 +22,7 @@ def parseWolframAlphaResponse(response, redirected = False):
     recalculate = xmlTree.get('recalculate')
     if recalculate:
         if not redirected:
-            return parseWolframAlphaResponse(urllib.urlopen(recalculate).read(), True)
+            return parseWolframAlphaResponse(urlopen(recalculate).read(), True)
         else:
             return 'Error', 'Too many redirects.'
     else:
@@ -46,8 +46,11 @@ if __name__ == "__main__":
         bool, response = result
         if bool == True:
             for title, poddle in response:
-	        print '\x02', title, '\n', " ".join(poddle), '\n'
+	        try: print '\x02', title, '\n', " ".join(poddle).encode('iso-8859-8'), '\n'
+	        except (UnicodeEncodeError): 
+	            print '\x02', '  !!UnicodeEncodeException occurred here!!'
+	            continue
         else:
-            print '\x02', 'No results found, try a different keyword.', '\n'
+            print '\x02', 'No results found, try a different keyword.', '\n', '\x02', " ".join(response)
     except (IndexError, TypeError, SystemExit, KeyboardInterrupt):
         print "lolwut."
