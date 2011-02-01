@@ -13,11 +13,11 @@ parse () {
 	recv_chan=$(echo ${@} | awk '{print $3}')
 	send_nick=$(echo "$send_nick" | awk '{print $1}')
 	send_host=$(echo "$send_host" | awk '{print $2}')
-	command=$(echo ${@} | awk '{print $2}')
+	command="$(echo ${@} | awk '{print $2}')"
 	dest=$(echo ${@} | awk '{print $3}')
-	text=${@:4}
-	cmd=$(echo $text | awk '{print $1}')
-	cmd=${cmd#:}
+	text="${@:4}"
+	cmd="$(echo $text | awk '{print $1}')"
+	cmd="${cmd#:}"
 	insert_hooks
 	. include/libctcp.sh
 	if [ "$(echo $cmd | awk '{print $1}' | cut -b 1)" == $prefix ] && [ $command == "PRIVMSG" ] || [ $command == "PONG" ] ; then

@@ -53,6 +53,7 @@ function die () {
 tail -f $socket | telnet $server $port | \
 while true
 do read LINE || break
+	LINE=${LINE//\*/\\x2a}
 	echo "$LINE"
 	# check for pings from the ircd
 	if [ $(echo "$LINE" | awk '{print $1}') == "PING" ] ; then
@@ -72,16 +73,17 @@ do read LINE || break
 	fi
 
 	# check the perform to know when to join our channel
-	if [ $(echo $LINE | awk '{print $2}' | cut -b 1) == "4" ] || [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "3" ] ; then
+	if [ $(echo "$LINE" | awk '{print $2}' | cut -b 1) == "4" ] || [ "$(echo $LINE | awk '{print $2}' | cut -b 1)" == "3" ] ; then
 		join $channel
 	fi
-	
+
 	# parse each line in real time
+	# parse ${LINE//\*/\\x2a}
 	parse $LINE
-	
+
 	# log the line just for reference
-	echo $LINE >> etc/core_log
-	
+	echo "$LINE" >> etc/core_log
+
 	# check for a kick so we know to rejoin
 	if [ $(echo "$LINE" | awk '{print $2}') == "KICK" ] ; then
 		let one++
