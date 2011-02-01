@@ -20,7 +20,7 @@ parse () {
 	cmd=${cmd#:}
 	insert_hooks
 	. include/libctcp.sh
-	if [ $(echo $cmd | awk '{print $1}' | cut -b 1) == $prefix ] && [ $command == "PRIVMSG" ] || [ $command == "PONG" ] ; then
+	if [ "$(echo $cmd | awk '{print $1}' | cut -b 1)" == $prefix ] && [ $command == "PRIVMSG" ] || [ $command == "PONG" ] ; then
 		if [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == "":"$prefix"ident"" ] && [ "$(pass_md5 $(echo ${@} | awk '{print $5}'))" == "$owner_pass" ] ; then
 			user_host=$send_host
 			notice $send_nick Identified.
