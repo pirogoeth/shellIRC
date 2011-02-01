@@ -50,7 +50,7 @@ if __name__ == "__main__":
 	        except (UnicodeEncodeError): 
 	            print '\x02', '  !!UnicodeEncodeException occurred here!!'
 	            continue
-        else:
+        elif bool == False:
             print '\x02', 'No results found, try a different keyword.', '\n', '\x02', " ".join(response)
     except (IndexError, TypeError, SystemExit, KeyboardInterrupt):
         print "lolwut."
