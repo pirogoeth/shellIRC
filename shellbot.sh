@@ -8,7 +8,7 @@
 socket="etc/core_input"
 
 # setup for arguments and case it
-while getopts "S:C:N:" flag
+while getopts "S:C:N:h" flag
 	do
 		case "$flag" in
 			S) export server="$OPTARG";export socket="tmp/$server"_input""
@@ -16,6 +16,8 @@ while getopts "S:C:N:" flag
 			C) export channel="$OPTARG"
 			;;
 			N) export nick="$OPTARG"
+			;;
+			h) echo -en "`basename $0`: [-Sserver|-Nnick|-Cchannel|-h]\x0aoptions do not have to be used in conjunction, you may use any option without the others.\x0a"
 		esac
 	done
 
