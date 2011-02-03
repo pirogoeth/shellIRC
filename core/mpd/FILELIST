@@ -1,0 +1,3 @@
+mpc-httpd.sh:modules/hooks/code/mpc-httpd.sh
+mpd.sh:modules/hooks/mpd.sh
+~requires:tcpserver,awk
