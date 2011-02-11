@@ -59,7 +59,13 @@ if __name__ == "__main__":
 
     except (SystemExit, KeyboardInterrupt):
         print 'exiting.'
-    except (TypeError, AttributeError, IOError) as (errno, errstr):
+    except TypeError as (errno, errstr):
+        print 'A wild exception appears!'
+        print '['+errno+'] ', errstr
+    except AttributeError as (errno, errstr):
+        print 'A wild exception appears!'
+        print '['+errno+'] ', errstr
+    except IOError as (errno, errstr):
         print 'A wild exception appears!'
         print '['+errno+'] ', errstr
     except: traceback.last()
