@@ -10,6 +10,7 @@
 parse () {
 	send_nick=$(echo ${@} | awk '{print $1}' | sed -e 's/://;s/!/ /')
 	send_host=$(echo ${@} | awk '{print $1}' | sed -e 's/://;s/@/ /')
+	send_fhost=$(echo ${@} | awk '{print $1}' | sed -e 's/://')
 	recv_chan=$(echo ${@} | awk '{print $3}')
 	send_nick=$(echo "$send_nick" | awk '{print $1}')
 	send_host=$(echo "$send_host" | awk '{print $2}')
@@ -22,7 +23,7 @@ parse () {
 	. include/libctcp.sh
 	if [ "$(echo $cmd | awk '{print $1}' | cut -b 1)" == $prefix ] && [ $command == "PRIVMSG" ] || [ $command == "PONG" ] ; then
 		if [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == "":"$prefix"ident"" ] && [ "$(pass_md5 $(echo ${@} | awk '{print $5}'))" == "$owner_pass" ] ; then
-			user_host=$send_host
+			user_host=$send_fhost
 			notice $send_nick Identified.
 		elif [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == "":"$prefix"ident"" ] && [ "$(pass_md5 $(echo ${@} | awk '{print $5}'))" != "$owner_pass" ] ; then
 			user_host=""
