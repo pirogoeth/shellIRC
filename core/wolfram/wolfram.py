@@ -64,7 +64,7 @@ if __name__ == "__main__":
     except AttributeError:
         print 'A wild AttributeError exception appears!'
         traceback.last()
-    except IOError as (errno, errstr):
+    except IOError:
         print 'A wild IOError exception appears!'
         traceback.last()
     except: traceback.last()
