@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from urllib import urlencode, urlopen
-from xml.etree.cElementTree import fromstring
+import xml.etree.cElementTree as xtree
 import sys
 
 appId = '395X7T-8JLXGEP8YH'
@@ -16,26 +16,27 @@ def search(query, format=('plaintext', )):
                 }
             )
         )
-    ).read())
-def parseWolframAlphaResponse(response, redirected = False):
-    xmlTree = fromstring(response)
+    ))
+def parseWolframAlphaResponse(response, redirected = False, results = None):
+    results = results if results is not None else []
+    xmlTree = xtree.fromstring(response.read())
     recalculate = xmlTree.get('recalculate')
-    if recalculate:
-        if not redirected:
-            return parseWolframAlphaResponse(urlopen(recalculate).read(), True)
-        else:
-            return 'Error', 'Too many redirects.'
-    else:
-        success = xmlTree.get('success')
-        if success == 'true':
-            out = []
-            for pod in xmlTree.findall('pod'):
-                title = pod.get('title')
-                plaintext = pod.find('subpod/plaintext')
-                if plaintext is not None and plaintext.text:
-                    out.append((title, plaintext.text.split('\n')))
-                    
-            return True, out
+    success = xmlTree.get('success')
+    if success == 'true':
+        for pod in xmlTree.findall('pod'):
+            title = pod.get('title')
+            plaintext = pod.find('subpod/plaintext')
+            if plaintext is not None and plaintext.text:
+                results.append((title, plaintext.text.split('\n')))
+        if recalculate:
+            if not redirected:
+                return parseWolframAlphaResponse(urlopen(recalculate), True, results)
+            elif results:
+                return True, results
+            else:
+                return error, 'Too many redirects.'
+        elif success == 'true':
+            return True, results
         else:
             return False, [tip.get('text') for tip in xmlTree.findall('tips/tip')]
 
