@@ -60,11 +60,11 @@ if __name__ == "__main__":
         print 'exiting.'
     except TypeError:
         print 'A wild TypeError exception appears!'
-        traceback.last()
+        traceback.print_last()
     except AttributeError:
         print 'A wild AttributeError exception appears!'
-        traceback.last()
+        traceback.print_last()
     except IOError:
         print 'A wild IOError exception appears!'
-        traceback.last()
-    except: traceback.last()
+        traceback.print_last()
+    except: traceback.print_last()
