@@ -56,16 +56,15 @@ if __name__ == "__main__":
                 print '\x02\x034,1', 'No results found, try a different keyword.', '\n'
             elif len(" ".join(response)) != 0:
                 print '\x02\x034,1', 'No results found, try a different keyword.', '\n', '\x02\x034,1', " ".join(response)
-
     except (SystemExit, KeyboardInterrupt):
         print 'exiting.'
-    except TypeError as (errno, errstr):
-        print 'A wild exception appears!'
-        print '['+errno+'] ', errstr
-    except AttributeError as (errno, errstr):
-        print 'A wild exception appears!'
-        print '['+errno+'] ', errstr
+    except TypeError:
+        print 'A wild TypeError exception appears!'
+        traceback.last()
+    except AttributeError:
+        print 'A wild AttributeError exception appears!'
+        traceback.last()
     except IOError as (errno, errstr):
-        print 'A wild exception appears!'
-        print '['+errno+'] ', errstr
+        print 'A wild IOError exception appears!'
+        traceback.last()
     except: traceback.last()
