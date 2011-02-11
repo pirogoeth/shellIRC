@@ -43,7 +43,6 @@ def parseWolframAlphaResponse(response, redirected = False, results = None):
 if __name__ == "__main__":
     try:
         text = sys.stdin.readlines()
-        print '\n\x02', 'Calculating...', '\n'
         result = search(" ".join(text))
         bool, response = result
         if bool == True:
