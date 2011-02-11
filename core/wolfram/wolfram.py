@@ -2,7 +2,7 @@
 
 from urllib import urlencode, urlopen
 import xml.etree.cElementTree as xtree
-import sys
+import sys, traceback
 
 appId = '395X7T-8JLXGEP8YH'
 
@@ -43,6 +43,7 @@ def parseWolframAlphaResponse(response, redirected = False, results = None):
 if __name__ == "__main__":
     try:
         text = sys.stdin.readlines()
+        print '\n\x02', 'Calculating...', '\n'
         result = search(" ".join(text))
         bool, response = result
         if bool == True:
@@ -57,5 +58,13 @@ if __name__ == "__main__":
             elif len(" ".join(response)) != 0:
                 print '\x02\x034,1', 'No results found, try a different keyword.', '\n', '\x02\x034,1', " ".join(response)
 
-    except (IndexError, TypeError, SystemExit, KeyboardInterrupt):
-        print "lolwut."
+    except (SystemExit, KeyboardInterrupt):
+        print 'exiting.'
+    except TypeError as (errno, errstr):
+        print '['+errno+'] ', errstr
+    except AttributeError as (errno, errstr):
+        print '['+errno+'] ', errstr
+    except IOError as (errno, errstr):
+        print '['+errno+'] ', errstr
+    except: 
+        traceback.last()
