@@ -4,14 +4,11 @@
 addquote () {
 	if [ $(echo -n $1 | wc -c) == "1" ] || [ $(echo -n $1 | wc -c) == "" ] || [ $(echo -n "$1") == "\*" ] ; then
 		msg $dest $send_nick, your quote was rejected.
-	else	
+	else
 		qtext=$(echo "'$1'")
 		ts=$(echo "@@@ added by $send_nick")
 		ts=$(echo $ts | sed -e 's/|/%/g;s/ /|/g')
-		echo "$qtext|$ts" >> etc/mod_quotes
-		quotes=$(cat etc/mod_quotes)
-		rm etc/mod_quotes ; touch etc/mod_quotes
-		echo "$quotes" >>etc/mod_quotes
+		echo -e "\x0a$qtext|$ts" >> etc/mod_quotes
 		msg $dest $send_nick, your quote was added.
 	fi
 }
