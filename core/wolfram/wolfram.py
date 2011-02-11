@@ -48,8 +48,8 @@ if __name__ == "__main__":
         if bool == True:
             for title, poddle in response:
 	        try: print '\x02', title, '\n\x0310,1', " ".join(poddle).encode('iso-8859-8'), '\n'
-	        except (UnicodeEncodeError): 
-	            print '\x02\x034,1', '  !!UnicodeEncodeException occurred here!!'
+	        except (UnicodeEncodeError) as (errno, errstr): 
+	            print '\x02\x034,1', '  A WILD UnicodeEncodeException APPEARS!', '\n', '\x02[{0}]: {1}'.format(errno, errstr)
 	            continue
         elif bool == False:
             if len(" ".join(response)) == 0:
@@ -60,5 +60,6 @@ if __name__ == "__main__":
     except (SystemExit, KeyboardInterrupt):
         print 'exiting.'
     except (TypeError, AttributeError, IOError) as (errno, errstr):
+        print 'A wild exception appears!'
         print '['+errno+'] ', errstr
     except: traceback.last()
