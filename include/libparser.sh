@@ -36,9 +36,9 @@ parse () {
 			notice $send_nick Invalid.
 		fi
 		if [ $(echo "$cmd" | cut -b 1-6) == $prefix"shell" ] ; then
-			rm etc/core_shell
-			touch etc/core_shell
-			if [ $send_host == $user_host ] ; then
+			if [ $send_fhost == $user_host ] ; then
+				rm etc/core_shell
+				touch etc/core_shell
 				echo "$(eval ${text#* } 2>&1 1>&1)" 1>etc/core_shell
 				while read core_shell; do
 					msg $dest $core_shell
@@ -64,7 +64,7 @@ parse () {
 			fi
 		fi
 		if [ $(echo $cmd | cut -b 1-9) == $prefix"shutdown" ] ; then
-			if [ "$send_host" == "$user_host" ] ; then
+			if [ "$send_fhost" == "$user_host" ] ; then
 				echo "QUIT" >> $socket
 				killall -TERM $$
 				die "Received shutdown command"
