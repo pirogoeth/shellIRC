@@ -3,7 +3,7 @@
 
 require servsaxx.def.sed
 
-if [ ! -z $(echo $text | awk '{print $1}' | grep -E -o -m1 "\->" | tr -d [:space:]) ] && [ "$send_host" == "$user_host" ] ; then
+if [ ! -z $(echo $text | awk '{print $1}' | grep -E -o -m1 "\->" | tr -d [:space:]) ] && [ "$send_fhost" == "$user_host" ] ; then
 	if [ $(echo $cmd | cut -b 1-2) == ":>" ] ; then
 		break 1
 	fi
