@@ -37,8 +37,8 @@ def parseWolframAlphaResponse(response, redirected = False, results = None):
                 return error, 'Too many redirects.'
         elif success == 'true':
             return True, results
-        else:
-            return False, [tip.get('text') for tip in xmlTree.findall('tips/tip')]
+    else:
+        return False, [tip.get('text') for tip in xmlTree.findall('tips/tip')]
 
 if __name__ == "__main__":
     try:
