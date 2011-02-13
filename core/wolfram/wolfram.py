@@ -47,15 +47,15 @@ if __name__ == "__main__":
         bool, response = result
         if bool == True:
             for title, poddle in response:
-	        try: print '\x02', title, '\n \x0310,1', " ".join(poddle).encode('iso-8859-8'), '\n'
+	        try: print '\x02', title, '\n \x0310,0', " ".join(poddle).encode('iso-8859-8'), '\n'
 	        except (UnicodeEncodeError):
-	            print '\x02\x034,1', '  A WILD UnicodeEncodeException APPEARS!', '\n'
+	            print '\x02\x034,0', '  A WILD UnicodeEncodeException APPEARS!', '\n'
 	            continue
         elif bool == False:
             if len(" ".join(response)) == 0:
-                print '\x02\x034,1', 'No results found, try a different keyword.', '\n'
+                print '\x02\x034,0', 'No results found, try a different keyword.', '\n'
             elif len(" ".join(response)) != 0:
-                print '\x02\x034,1', 'No results found, try a different keyword.', '\n', '\x02\x034,1', " ".join(response)
+                print '\x02\x034,0', 'No results found, try a different keyword.', '\n', '\x02\x034,0', " ".join(response)
     except (SystemExit, KeyboardInterrupt):
         print 'exiting.'
     except TypeError:

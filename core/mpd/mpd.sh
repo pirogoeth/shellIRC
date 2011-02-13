@@ -28,14 +28,14 @@ if [ "$(echo $cmd | cut -b 1-6)" == $prefix"httpd" ] ; then
 		msg $dest $(echo -en '\x02\x0310,1Starting MPC Web server...')
 		tcpserver -Drv $bindip $bindport ./modules/hooks/code/mpc-httpd.sh $host $port "$format" 2>&1 1>&1 &
 		echo $! >tmp/httpd.pid
-		msg $dest $(echo -en "\x02\x0310,1Started. Now Listening on "$bindip":"$bindport)
-		msg $dest $(echo -en "\x02\x0310,1Type "$prefix"httpd again to stop")
+		msg $dest $(echo -en "\x02\x0310,0Started. Now Listening on "$bindip":"$bindport)
+		msg $dest $(echo -en "\x02\x0310,0Type "$prefix"httpd again to stop")
 	elif [ "$allow" == "yes" ] && [ -e tmp/httpd.pid ] ; then
-		msg $dest $(echo -en '\x02\x0310,1Killing PID '$(cat tmp/httpd.pid)'...')
+		msg $dest $(echo -en '\x02\x0310,0Killing PID '$(cat tmp/httpd.pid)'...')
 		eval 'kill -9 `cat tmp/httpd.pid`'
-		msg $dest $(echo -en "\x02\x0310,1Kill finished with status: $?")
+		msg $dest $(echo -en "\x02\x0310,0Kill finished with status: $?")
 		rm tmp/httpd.pid
 	else
-		msg $dest $(echo -en '\x02\x036,1Stopped. Change the allow option in modules/hooks/mpd.sh to yes to use the httpd')
+		msg $dest $(echo -en '\x02\x036,0Stopped. Change the allow option in modules/hooks/mpd.sh to yes to use the httpd')
 	fi
 fi
