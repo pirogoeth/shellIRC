@@ -5,6 +5,14 @@
 config=${config:-"etc/core_config.sh"}
 state="startup"
 
+# include our config or die
+if test ! -e $config; then
+	echo "FATAL: config file \'${config}\' does not exist."; exit 1
+else
+	. $config
+	unset config
+fi
+
 # setup for arguments and case it
 while getopts "S:P:C:N:H:f:h" flag
 	do
@@ -26,11 +34,14 @@ while getopts "S:P:C:N:H:f:h" flag
 		esac
 	done
 
-# include our config or die
-if test ! -e $config; then
-	echo "FATAL: config file \'${config}\' does not exist."; exit 1
-else
-	. $config
+# redundancy
+if test ! -z $config; then
+	# include our config or die
+	if test ! -e $config; then
+		echo "FATAL: config file \'${config}\' does not exist."; exit 1
+	else
+		. $config
+	fi
 fi
 
 # setup the socket
@@ -82,10 +93,8 @@ while true
 do read LINE || break
 	# protect from the exploit that nukes bashIRC
 	LINE=${LINE//\*/\\x2a}
-	# am i supposed to be quiet? :x
-	if test "$core_quiet" == "no"; then
-		echo "$LINE"
-	fi
+	echo "$LINE"
+
 	# check for pings from the ircd
 	if [ $(echo "$LINE" | awk '{print $1}') == "PING" ] ; then
 		server_resp=$(echo "$LINE" | awk '{print $2}')
@@ -126,4 +135,4 @@ do read LINE || break
 		one=$((one++))
 		rejoin $(echo $LINE | awk '{print $3}')
 	fi
-done
+done 
