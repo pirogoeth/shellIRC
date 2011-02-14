@@ -1,25 +1,49 @@
 #!/usr/bin/env bash
 # shellbot.sh -- core for miyoko's shellbot
 
-# include our config
-. etc/core_config.sh
-
-# setup the socket
-socket="etc/core_input"
+# define defaults and startup
+config=${config:-"etc/core_config.sh"}
+state="startup"
 
 # setup for arguments and case it
-while getopts "S:C:N:h" flag
+while getopts "S:P:C:N:H:f:h" flag
 	do
 		case "$flag" in
 			S) export server="$OPTARG";export socket="tmp/$server"_input""
+			;;
+			P) export port="$OPTARG"
 			;;
 			C) export channel="$OPTARG"
 			;;
 			N) export nick="$OPTARG"
 			;;
-			h) echo -en "`basename $0`: [-Sserver|-Nnick|-Cchannel|-h]\x0aoptions do not have to be used in conjunction, you may use any option without the others.\x0a"
+			H) . include/libcompat.sh
+			   pass_md5 $OPTARG; exit 0
+			;;
+			f) export config="$OPTARG"
+			h) echo -en "`basename $0`: [-Sserver|-Pport|-Nnick|-Cchannel||-H password|-h]\x0aoptions do not have to be used in conjunction, you may use any option without the others.\x0a"; exit 0
 		esac
 	done
+
+# include our config or die
+if test ! -e $config; then
+	echo "FATAL: config file \'${config}\' does not exist."; exit 1
+else
+	. $config
+fi
+
+# setup the socket
+socket="etc/core_input"
+
+# setup runtime with whatever the config says
+case $core_debug in
+	[Yy][Ee][Ss]) set -x
+	;;
+	[Nn][Oo])
+	;;
+	*) echo "WARNING: core_debug: variable not defined"
+	;;
+esac
 
 # some tiny bit of setup
 boottime=$(date +%s)
@@ -55,8 +79,12 @@ function die () {
 tail -f $socket | telnet $server $port | \
 while true
 do read LINE || break
+	# protect from the exploit that nukes bashIRC
 	LINE=${LINE//\*/\\x2a}
-	echo "$LINE"
+	# am i supposed to be quiet? :x
+	if test "$core_quiet" == "no"; then
+		echo "$LINE"
+	fi
 	# check for pings from the ircd
 	if [ $(echo "$LINE" | awk '{print $1}') == "PING" ] ; then
 		server_resp=$(echo "$LINE" | awk '{print $2}')
@@ -64,12 +92,19 @@ do read LINE || break
 	fi
 
 	# make sure there wasnt an ERROR: for disconnect sent
-	if [ $(echo "$LINE" | awk '{print $1}') == "ERROR:" ] ; then
-		die
+	if [ "$(echo \"${LINE}\" | awk '{print $1}')" == "ERROR:" ] ; then
+		echo "CONNECTION: server error occurred."
+		if test "$core_reconn" == "yes"; then
+			echo "Attempting to reconnect."
+			$0 $*
+		else
+			echo "Aborting connection."
+			exit 1
+		fi
 	fi
 
-	# check is the nick was already in use
-	if [ "$(echo "$LINE" | awk '{print $4}')" == "$nick" ] ; then
+	# check if the nick was already in use
+	if [ "$(echo "$LINE" | awk '{print $2}')" == "433" ] ; then
 		nick="$nick-"
 		echo "NICK $nick" >>$socket
 	fi
@@ -80,15 +115,14 @@ do read LINE || break
 	fi
 
 	# parse each line in real time
-	# parse ${LINE//\*/\\x2a}
 	parse $LINE
 
 	# log the line just for reference
 	echo "$LINE" >> etc/core_log
 
 	# check for a kick so we know to rejoin
-	if [ $(echo "$LINE" | awk '{print $2}') == "KICK" ] ; then
-		let one++
-		rejoin
+	if [ $(echo "$LINE" | awk '{print $2}') == "KICK" ] && [ "$(echo $LINE | awk '{print $4}')" == "${nick}"; then
+		one=$((one++))
+		rejoin $(echo $LINE | awk '{print $3}')
 	fi
 done

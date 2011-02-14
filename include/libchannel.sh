@@ -4,8 +4,8 @@
 # current channel commands (join, part)
 rejoin () {
 	if [ $one == "1" ] ; then
-		echo "JOIN $channel" >> $socket
-		let one--
+		echo "JOIN $1" >> $socket
+		one=$((one--))
 	fi
 }
 
