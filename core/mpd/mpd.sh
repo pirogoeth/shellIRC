@@ -23,7 +23,7 @@ if [ "$(echo $cmd | cut -b 1-4)" == $prefix"mpc" ] ; then
 	msg $dest $retr
 fi
 
-if [ "$(echo $cmd | cut -b 1-6)" == $prefix"httpd" ] ; then
+if [ "$(echo $cmd | cut -b 1-6)" == $prefix"httpd" ] && [ "$send_fhost" == "$user_host" ] ; then
 	if [ "$allow" == "yes" ] && [ ! -e tmp/httpd.pid ] ; then
 		msg $dest $(echo -en '\x02\x0310,1Starting MPC Web server...')
 		tcpserver -Drv $bindip $bindport ./modules/hooks/code/mpc-httpd.sh $host $port "$format" 2>&1 1>&1 &
