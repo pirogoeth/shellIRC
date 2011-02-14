@@ -81,6 +81,7 @@ echo "USER $(whoami) +iw  $nick :$nick" >> $socket
 
 # setup 'die' function
 function die () {
+	state="halting"
 	kill -9 $$
 }
 
@@ -102,7 +103,7 @@ do read LINE || break
 	fi
 
 	# make sure there wasnt an ERROR: for disconnect sent
-	if [ "$(echo \"${LINE}\" | awk '{print $1}')" == "ERROR:" ] ; then
+	if [ "$(echo \"${LINE}\" | awk '{print $1}')" == "ERROR" ] && [ ! "$state" == "halting" ] ; then
 		echo "CONNECTION: server error occurred."
 		if test "$core_reconn" == "yes"; then
 			echo "Attempting to reconnect."
