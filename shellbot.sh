@@ -131,8 +131,8 @@ do read LINE || break
 	echo "$LINE" >> etc/core_log
 
 	# check for a kick so we know to rejoin
-	if [ $(echo "$LINE" | awk '{print $2}') == "KICK" ] && [ "$(echo $LINE | awk '{print $4}')" == "${nick}"; then
+	if [ $(echo "$LINE" | awk '{print $2}') == "KICK" ] && [ "$(echo $LINE | awk '{print $4}')" == "${nick}" ] ; then
 		one=$((one++))
 		rejoin $(echo $LINE | awk '{print $3}')
 	fi
-done 
+done
