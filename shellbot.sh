@@ -21,6 +21,7 @@ while getopts "S:P:C:N:H:f:h" flag
 			   pass_md5 $OPTARG; exit 0
 			;;
 			f) export config="$OPTARG"
+			;;
 			h) echo -en "`basename $0`: [-Sserver|-Pport|-Nnick|-Cchannel||-fconfigfile||-H password|-h]\x0aoptions do not have to be used in conjunction, you may use any option without the others.\x0a"; exit 0
 		esac
 	done
