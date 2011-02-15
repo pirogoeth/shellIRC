@@ -76,7 +76,7 @@ case "$core_bck" in
 		    echo "CORE: running"
 		  elif test ! "$running" == "yes"; then
 		    echo "CORE: not backgrounding."
-		    { nohup $0 $* -B; }
+		    { nohup $0 $* -B; } & tail -f nohup.out
 		  fi
 	;;
 esac
