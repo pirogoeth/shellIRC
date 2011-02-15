@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # core_config.sh -- core configuration for miyoko's shellbot
 
 # CONF: bot
