@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
 # shellbot.sh -- core for miyoko's shellbot
 
-# define defaults and startup
-config=${config:-"etc/core_config.sh"}
-state="startup"
+# setup config
+config="etc/core_config.sh"
 
-# include our config or die
-if test ! -e $config; then
-	echo "FATAL: config file \'${config}\' does not exist."; exit 1
-else
-	. $config
-	unset config
+# config check
+if test ! -z $config; then
+	# include our config or die
+	if test ! -e $config; then
+		echo "FATAL: config file \'${config}\' does not exist."; exit 1
+	else
+		. $config
+	fi
 fi
 
 # setup for arguments and case it
-while getopts "S:P:C:N:H:f:h" flag
+while getopts "S:P:C:N:H:f:hbB" flag
 	do
 		case "$flag" in
-			S) export server="$OPTARG";export socket="tmp/$server"_input""
+			S) export server="$OPTARG";if test ! -e "tmp/${server}_input"; then export socket="tmp/${server}_input"; elif test -e "tmp/${server}_input"; then export socket="tmp/${server}_input_"; fi
 			;;
 			P) export port="$OPTARG"
 			;;
@@ -28,14 +29,21 @@ while getopts "S:P:C:N:H:f:h" flag
 			H) . include/libcompat.sh
 			   pass_md5 $OPTARG; exit 0
 			;;
-			f) export config="$OPTARG"
+			f) export cust_conf="yes";export config="$OPTARG"
 			;;
-			h) echo -en "`basename $0`: [-Sserver|-Pport|-Nnick|-Cchannel||-fconfigfile||-H password|-h]\x0aoptions do not have to be used in conjunction, you may use any option without the others.\x0a"; exit 0
+			h) echo -en "`basename $0`: [-Sserver|-Pport|-Nnick|-Cchannel||-fconfigfile||-H password|-h]\x0aoptions do not have to be used in conjunction, you may use any option without the others.\x0aDO NOT SPECIFY -f with -S, -P, -C, OR -N.\x0a"; exit 0
+			;;
+			b) export backgrounded="yes"
+			;;
+			B) export running="yes"
+			;;
 		esac
 	done
 
-# redundancy
-if test ! -z $config; then
+# config stuff
+if test "$cust_conf" == "no"; then
+	config="etc/core_config.sh"
+elif test "$cust_conf" == "yes"; then
 	# include our config or die
 	if test ! -e $config; then
 		echo "FATAL: config file \'${config}\' does not exist."; exit 1
@@ -45,15 +53,31 @@ if test ! -z $config; then
 fi
 
 # setup the socket
-socket="etc/core_input"
+socket="tmp/${server}.socket"
 
 # setup runtime with whatever the config says
-case $core_debug in
+case "$core_debug" in
 	[Yy][Ee][Ss]) set -x
 	;;
-	[Nn][Oo])
+	[Nn][Oo]) echo "CORE: debugging off"
 	;;
-	*) echo "WARNING: core_debug: variable not defined"
+esac
+
+# see if we need to background and do so, if needed
+case "$core_bck" in
+	[Yy][Ee][Ss]) if test "$backgrounded" == "yes"; then
+			echo "CORE: backgrounded"
+		      elif test ! "$backgrounded" == "yes"; then
+		        echo "CORE: backgrounding..."
+		        { nohup $0 $* -b & disown; exit 0; }; exit 0
+		      fi
+	;;
+	[Nn][Oo]) if test "$running" == "yes"; then
+		    echo "CORE: running"
+		  elif test ! "$running" == "yes"; then
+		    echo "CORE: not backgrounding."
+		    { nohup $0 $* -B; }
+		  fi
 	;;
 esac
 
@@ -65,6 +89,13 @@ if [ -e $socket ] ; then
 	echo '' > $socket
 else
 	touch $socket
+fi
+
+# setup the nohup log
+if test -e nohup.log; then
+	echo '' >nohup.out
+else
+	touch nohup.out
 fi
 
 # simple variable for kickrejoin
@@ -88,7 +119,8 @@ function die () {
 # include our require stuff
 . include/required.sh
 
-# start up the connection
+# start up the connection and enter main loop
+echo -en "CORE: entering main loop\x0a\x0a"
 tail -f $socket | telnet $server $port | \
 while true
 do read LINE || break
@@ -103,13 +135,13 @@ do read LINE || break
 	fi
 
 	# make sure there wasnt an ERROR: for disconnect sent
-	if [ "$(echo \"${LINE}\" | awk '{print $1}')" == "ERROR" ] && [ ! "$state" == "halting" ] ; then
+	if [ "$(echo ${LINE} | awk '{print $1}')" == "ERROR" ] && [ ! "$state" == "halting" ] ; then
 		echo "CONNECTION: server error occurred."
 		if test "$core_reconn" == "yes"; then
-			echo "Attempting to reconnect."
-			$0 $*
+			echo "CORE: reconnecting"
+			{ $0 $*; }
 		else
-			echo "Aborting connection."
+			echo "CONNECTION: abort"
 			exit 1
 		fi
 	fi
@@ -125,15 +157,15 @@ do read LINE || break
 		join $channel
 	fi
 
-	# parse each line in real time
-	parse $LINE
-
-	# log the line just for reference
-	echo "$LINE" >> etc/core_log
-
 	# check for a kick so we know to rejoin
 	if [ $(echo "$LINE" | awk '{print $2}') == "KICK" ] && [ "$(echo $LINE | awk '{print $4}')" == "${nick}" ] ; then
 		one=$((one++))
 		rejoin $(echo $LINE | awk '{print $3}')
 	fi
+
+	# parse each line in real time
+	parse $LINE
+
+	# log the line just for reference
+	echo "$LINE" >> etc/core_log
 done
