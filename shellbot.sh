@@ -69,14 +69,14 @@ case "$core_bck" in
 			echo "CORE: backgrounded"
 		      elif test ! "$backgrounded" == "yes"; then
 		        echo "CORE: backgrounding..."
-		        { nohup $0 $* -b & disown; exit 0; }; exit 0
+		        { nohup $0 $* -b 2>&1 1>>tmp/${server}.console & disown; exit 0; }; exit 0
 		      fi
 	;;
 	[Nn][Oo]) if test "$running" == "yes"; then
 		    echo "CORE: running"
 		  elif test ! "$running" == "yes"; then
 		    echo "CORE: not backgrounding."
-		    { nohup $0 $* -B; } & tail -f nohup.out
+		    { nohup $0 $* -B 2>&1 1>>tmp/${server}.console; } & tail -f tmp/${server}.console
 		  fi
 	;;
 esac
@@ -92,10 +92,10 @@ else
 fi
 
 # setup the nohup log
-if test -e nohup.log; then
-	echo '' >nohup.out
+if test -e tmp/${server}.console; then
+	echo '' >${server}.console
 else
-	touch nohup.out
+	touch ${server}.console
 fi
 
 # simple variable for kickrejoin
