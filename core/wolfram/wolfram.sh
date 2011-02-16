@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if test ! -z $1 && test "$1" == "help"; then
+	echo "\x02Usage: ${prefix}wa <query>\x0a"
+	exit 0
+fi
+
 if [ "$(echo $cmd | cut -b 1-3)" == $prefix"wa" ] ; then
 	if test -e tmp/wrap; then msg $send_nick 'Query already in progress, try again in a few seconds.'; else
 		msg ${dest} "$(echo -en '\x02[WolframAlpha]: Searching...')"

@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if test ! -z $1 && test "$1" == "help"; then
+	echo "\x02Usage: ${prefix}meme"
+	exit 0
+fi
+
 if [ "$(echo $cmd | cut -b 1-5)" == $prefix"meme" ] ; then
 	req=$(curl -s http://api.autome.me/text?lines=1)
 	colourlist="10,4 7,3 2,9 6,7 5,3 6,2 40,2 15,3"

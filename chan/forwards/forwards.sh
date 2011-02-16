@@ -1,5 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # forwards
+
+if test ! -z $1 && test "$1" == "help"; then
+	echo "\x02Usage:\x0a${prefix}forward <channame>\x0a${prefix}unforward\x0a"
+	exit 0
+fi
 
 if [ "$(echo $cmd)" == ">forward" ] && [ "$send_fhost" == "$user_host" ] ; then
 	export f_nick=$send_nick

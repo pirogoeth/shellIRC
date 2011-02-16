@@ -1,5 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # services_access -- module for miyoko's shellbot
+
+if test ! -z $1 && test "$1" == "help"; then
+	echo "\x02Usage: <tag>->command args\x0a"
+	exit 0
+fi
 
 require servsaxx.def.sed
 

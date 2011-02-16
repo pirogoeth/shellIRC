@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if test ! -z $1 && test "$1" == "help"; then
+	echo "\x02Usage: \x0a${prefix}np\x0a${prefix}update\x0a${prefix}httpd\x0a${prefix}mpc <commands>\x0a"
+	exit 0
+fi
+
 host='maio.me'
 port='3000'
 format='Now Playing: [[%title%] - [%artist%] - [%album%]] [(%time%)] [@ {%file%}]'
