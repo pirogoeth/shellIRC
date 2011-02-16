@@ -6,7 +6,7 @@ function help.retrieve () {
 	what=${search// /_}
 	result=$(cat tmp/bot.help | grep -m1 "${what}:")
 	if test -z "$result"; then
-		msg ${send_nick} $(echo -en "\x02No help topics available for \'${search}\'\x0a")
+		msg ${send_nick} $(echo -en "\x02No help topics available for '${search}'\x0a")
 	elif test ! -z "$result"; then
 		retr=$(echo "$result" | sed -e 's/ /_/g;s/:/ /')
 		echo ${retr} >asdf
