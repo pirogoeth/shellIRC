@@ -22,6 +22,14 @@ parse () {
 	insert_hooks
 	. include/libctcp.sh
 	if [ "$(echo $cmd | awk '{print $1}' | cut -b 1)" == "$prefix" ] && [ "$command" == "PRIVMSG" ] || [ "$command" == "PONG" ] ; then
+		if [ $(echo "$cmd" | cut -b 1-5) == $prefix"help" ] ; then
+			help=${text#$(echo $text | awk '{print $1}') }
+			if test "$help" == "$(echo $text | awk '{print $1}')"; then
+				help.list
+			else
+				help.retrieve ${help}
+			fi
+		fi
 		if [ $(echo "$dest") == "$nick" ] && [ $(echo ${@} | awk '{print $4}') == "":"$prefix"ident"" ] && [ "$(pass_md5 $(echo ${@} | awk '{print $5}'))" == "$owner_pass" ] ; then
 			user_host=$send_fhost
 			notice $send_nick Identified.

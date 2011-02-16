@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # quotes.sh -- quotes module for miyoko's shellbot
 
+if test ! -z $1 && test "$1" == "help"; then
+	echo "\x02Usage: ${prefix}quote [add <quote>|del <quotenum>|view <quotenum>|list]"
+fi
+
 addquote () {
 	if [ $(echo -n $1 | wc -c) == "1" ] || [ $(echo -n $1 | wc -c) == "" ] || [ $(echo -n "$1") == "\*" ] ; then
 		msg $dest $send_nick, your quote was rejected.
@@ -8,7 +12,7 @@ addquote () {
 		qtext=$(echo "'$1'")
 		ts=$(echo "@@@ added by $send_nick")
 		ts=$(echo $ts | sed -e 's/|/%/g;s/ /|/g')
-		echo -e "\x0a$qtext|$ts" >> etc/mod_quotes
+		echo "$qtext|$ts" >> etc/mod_quotes
 		msg $dest $send_nick, your quote was added.
 	fi
 }

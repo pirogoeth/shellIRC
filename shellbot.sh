@@ -71,6 +71,7 @@ case "$core_bck" in
 		        echo "CORE: backgrounding..."
 		        { nohup $0 $* -b 2>&1 1>>tmp/${server}.console & disown; exit 0; }; exit 0
 		      fi
+
 	;;
 	[Nn][Oo]) if test "$running" == "yes"; then
 		    echo "CORE: running"
@@ -93,18 +94,28 @@ fi
 
 # setup the nohup log
 if test -e tmp/${server}.console; then
-	echo '' >${server}.console
+	echo '' >tmp/${server}.console
 else
-	touch ${server}.console
+	touch tmp/${server}.console
 fi
 
 # simple variable for kickrejoin
 one=1
 
-# include our parsing, compatibility and channel management libraries
+# include our parsing, help, compatibility and channel management libraries
 . include/libparser.sh
 . include/libcompat.sh
 . include/libchannel.sh
+. include/libhelp.sh
+
+# include our require stuff
+. include/required.sh
+
+# prepare to generate help
+export prefix=${prefix}
+
+# generate help
+help.generate
 
 # dump registration info into core_input
 echo "NICK $nick" >> $socket
@@ -115,9 +126,6 @@ function die () {
 	state="halting"
 	kill -9 $$
 }
-
-# include our require stuff
-. include/required.sh
 
 # start up the connection and enter main loop
 echo -en "CORE: entering main loop\x0a\x0a"

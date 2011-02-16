@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # github.sh -- a github checking module for miyoko's shellbot
 
+if test ! -z $1 && test "$1" == "help"; then
+	echo "\x02Usage: ${prefix}github <username> <repo>[/branch]\x0a"
+	exit 0
+fi
+
 github_repo_info () {
 	checkfor_branch () {
 		if [ -z $1 ] ; then
