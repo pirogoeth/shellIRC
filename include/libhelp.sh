@@ -9,7 +9,6 @@ function help.retrieve () {
 		msg ${send_nick} $(echo -en "\x02No help topics available for '${search}'\x0a")
 	elif test ! -z "$result"; then
 		retr=$(echo "$result" | sed -e 's/ /_/g;s/:/ /')
-		echo ${retr} >asdf
 		help_title=$(echo ${retr} | awk '{print $1}')
 		help_content=$(echo ${retr} | awk '{print $2}')
 		help_content=${help_content//_/ }
