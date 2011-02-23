@@ -6,9 +6,9 @@ if test ! -z $1 && test "$1" == "help"; then
 fi
 
 if [ "$(echo $cmd | cut -b 1-3)" == $prefix"wa" ] ; then
-	touch tmp/wrap
 	if test -e tmp/wrap; then msg $send_nick 'Query already in progress, try again in a few seconds.'; else
-		msg ${dest} "$(echo -en '\x02[WolframAlpha]: Searching...')"
+		touch tmp/wrap
+                msg ${dest} "$(echo -en '\x02[WolframAlpha]: Searching...')"
 		query=${text#* }
 		if test -e tmp/wra ; then rm tmp/wra; touch tmp/wra; fi
 		echo -en "${query}" | ./include/wolfram.py 2>&1 1>tmp/wra
