@@ -56,7 +56,7 @@ if __name__ == "__main__":
     query = " ".join(query)
     bool, response = parseGTQuery(query, source, target)
     if bool is True:
-        try: print '\x02\x0310Google Translate: %s \x037-> \x0310%s: %s \x037->\x0310 %s' % (source, target, query, e.decode(response).encode('iso-8859-8'))
+        try: print '\x02\x0310Google Translate: %s \x037-> \x0310%s: %s \x037->\x0310 %s' % (source, target, query, e.decode(response).encode('utf8'))
         except (UnicodeEncodeError): print '\x02\x034A WILD UnicodeEncodeException APPEARS!'
     elif bool is False:
         print '\x02\x0310Google Translate: \x034[FAILED]:\x0310 %s \x037->\x0310 %s: %s' % (source, target, query)
