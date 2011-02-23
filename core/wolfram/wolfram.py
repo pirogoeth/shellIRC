@@ -47,7 +47,7 @@ if __name__ == "__main__":
         bool, response = result
         if bool == True:
             for title, poddle in response:
-	        try: print '\x02', title, '\n \x0310', " ".join(poddle).encode('iso-8859-8'), '\n'
+	        try: print '\x02', title, '\n \x0310', " ".join(poddle).encode('utf8'), '\n'
 	        except (UnicodeEncodeError):
 	            print '\x02\x034', '  A WILD UnicodeEncodeException APPEARS!', '\n'
 	            continue
